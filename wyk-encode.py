@@ -21,7 +21,20 @@ def wyk_encode(base_encoding, seq, adj_dinuc):
     if adj_dinuc is true, return list of (dinuc, encoding) for each adjacent dinuc
     for dinuc encoding it uses b1 b1xb2 b2 
     '''
-    pass
+    l = []
+    for pos, s in enumerate(seq):
+        if not adj_dinuc: # mononuc only
+            l.append((s, base_encoding[s]))
+        else: # encode all adjacent dinucleotides
+            di_seq = s + seq[pos+1]
+            mono1 = base_encoding[s]
+            mono2 = base_encoding[seq[pos+1]]
+            outer_prod = np.outer(mono1, mono2).flatten()
+            l.append((di_seq, mono1 + list(outer_prod) + mono2))
+
+            if pos == len(seq) - 2: # stop when at last dinucleotide
+                break 
+    return l
 
 parser = argparse.ArgumentParser()
 parser.add_argument('sequence', help='DNA sequence', type=str)
